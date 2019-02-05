@@ -1,63 +1,42 @@
-const fs = require('fs');
-const path = require('path');
-const todosPath = path.join(__dirname, '../todos.json');
-const uuidv1 = require('uuid/v1');
+'use strict';
 
-function queryAll() {
-    return new Promise(function(resolve, reject) {
-        fs.readFile(todosPath, function(err, data) {
-            if (err) throw err;
-    
-            const todos = JSON.parse(data.toString());
-    
-            resolve(todos);
-        });
-    });
-}
+module.exports = (sequelize, DataTypes) => {
+    const Todo = sequelize.define('Todo', {
+        title: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                len: {
+                    min: 6
+                },
+                isUnique(value, next) {
+                    Todo.find({
+                        where: {title: value},
+                        attributes: ['id']
+                    }).then(todo => {
+                        if (todo) {
+                            return next('This title is already in use.');
+                        }
 
-function store(todo) {
-    return new Promise(function(resolve, reject) {
-        fs.readFile(todosPath, function(err, data) {
-            if (err) throw err;
-    
-            const todos = JSON.parse(data.toString());
-            const newTodo = {
-                id: uuidv1(),
-                ...todo
-            };
+                        next();
+                    });
+                }
+            }
+        },
+        description: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            validate: {
+                len: {
+                    min: 20
+                }
+            }
+        }
+    }, {});
 
-            todos.push(newTodo);
+    Todo.associate = function (models) {
+        // associations can be defined here
+    };
 
-            fs.writeFile(todosPath, JSON.stringify(todos), function(err) {
-                if (err) throw err;
-
-                resolve(newTodo);
-            });
-        });
-    });
-}
-
-function destroy(id) {
-    return new Promise(function(resolve, reject) {
-        fs.readFile(todosPath, function(err, data) {
-            if (err) throw err;
-
-            const todos = JSON.parse(data.toString());
-            const newTodos = todos.filter(function(item) {
-                return item.id != id;
-            });
-
-            fs.writeFile(todosPath, JSON.stringify(newTodos), function(err) {
-                if (err) throw err;
-
-                resolve();
-            });
-        });
-    });
-}
-
-module.exports = {
-    queryAll,
-    store,
-    destroy
+    return Todo;
 };
