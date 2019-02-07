@@ -3,16 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon -L ./bin/www"
+    "start": "nodemon ./bin/www"
   },
   "dependencies": {
+    "bcrypt": "^3.0.4",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "~4.16.0",
     "morgan": "~1.9.0",
     "mysql2": "^1.6.4",
-    "sequelize": "^4.42.0",
-    "sequelize-cli": "^5.4.0",
-    "uuid": "^3.3.2"
+    "sequelize": "^4.42.0"
   }
 }

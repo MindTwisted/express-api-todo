@@ -1,0 +1,14 @@
+version: '3.6'
+
+services:
+
+  db:
+    image: mysql/mysql-server:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: express
+      MYSQL_PASSWORD: secret
+      MYSQL_DATABASE: express_todo_api
+    ports:
+      - "3306:3306"

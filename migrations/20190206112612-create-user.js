@@ -1,20 +1,24 @@
 'use strict';
 module.exports = {
     up: (queryInterface, Sequelize) => {
-        queryInterface.createTable('Todos', {
+        queryInterface.createTable('Users', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-            title: {
+            name: {
                 allowNull: false,
                 type: Sequelize.STRING
             },
-            description: {
+            email: {
                 allowNull: false,
-                type: Sequelize.TEXT
+                type: Sequelize.STRING
+            },
+            password: {
+                allowNull: false,
+                type: Sequelize.STRING
             },
             createdAt: {
                 allowNull: false,
@@ -26,12 +30,12 @@ module.exports = {
             }
         });
 
-        return queryInterface.addConstraint('Todos', ['title'], {
+        return queryInterface.addConstraint('Users', ['email'], {
             type: 'unique',
-            name: 'todos_unique_title'
+            name: 'users_unique_email'
         });
     },
     down: (queryInterface, Sequelize) => {
-        return queryInterface.dropTable('Todos');
+        return queryInterface.dropTable('Users');
     }
 };
