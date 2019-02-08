@@ -1,19 +1,17 @@
 const db = require('../models/index');
 const Todo = require('../models/todo')(db.sequelize, db.Sequelize);
 const ValidationErrorsSerializer = require('../serializers/ValidationErrorsSerializer');
+const View = require('../views/index');
 
 const TodoController = {
     index(req, res, next) {
         Todo.findAll()
             .then(todos => {
-                res.send({
-                    status: 'success',
-                    body: {
-                        data: {
-                            todos
-                        }
-                    }
-                });
+                const data = {
+                    todos
+                };
+
+                res.status(200).send(View.generate(null, data));
             });
     },
     show(req, res, next) {
@@ -22,24 +20,18 @@ const TodoController = {
         Todo.findById(id)
             .then(todo => {
                 if (!todo) {
-                    res.send({
-                        status: 'failed',
-                        body: {
-                            text: `Todo with id ${id} doesn't exist.`
-                        }
-                    }, 404);
+                    const text = `Todo with id ${id} doesn't exist.`;
+
+                    res.status(404).send(View.generate(text, null, false));
 
                     return;
                 }
 
-                res.send({
-                    status: 'success',
-                    body: {
-                        data: {
-                            todo
-                        }
-                    }
-                });
+                const data = {
+                    todo
+                };
+
+                res.status(200).send(View.generate(null, data));
             });
     },
     store(req, res, next) {
@@ -50,26 +42,20 @@ const TodoController = {
                 description: body.description
             })
             .then(todo => {
-                res.send({
-                    status: 'success',
-                    body: {
-                        text: "Todo was successfully added.",
-                        data: {
-                            todo
-                        }
-                    }
-                });
+                const text = "Todo was successfully added.";
+                const data = {
+                    todo
+                };
+
+                res.status(200).send(View.generate(text, data));
             })
             .catch(error => {
-                res.send({
-                    status: 'failed',
-                    body: {
-                        text: "Validation error.",
-                        data: {
-                            errors: ValidationErrorsSerializer.serialize(error.errors)
-                        }
-                    }
-                }, 422)
+                const text = "Validation failed.";
+                const data = {
+                    errors: ValidationErrorsSerializer.serialize(error.errors)
+                };
+
+                res.status(422).send(View.generate(text, data, false));
             });
     },
     destroy(req, res, next) {
@@ -84,20 +70,14 @@ const TodoController = {
                 return todo.destroy();
             })
             .then(() => {
-                res.send({
-                    status: 'success',
-                    body: {
-                        text: `Todo with id ${id} was successfully deleted.`
-                    }
-                });
+                const text = `Todo with id ${id} was successfully deleted.`;
+
+                res.status(200).send(View.generate(text));
             })
             .catch(error => {
-                res.send({
-                    status: 'failed',
-                    body: {
-                        text: `Todo with id ${id} doesn't exist.`
-                    }
-                }, 404);
+                const text = `Todo with id ${id} doesn't exist.`;
+
+                res.status(404).send(View.generate(text, null, false));
             });
     }
 };

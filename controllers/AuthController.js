@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const db = require('../models/index');
 const User = require('../models/user')(db.sequelize, db.Sequelize);
 const ValidationErrorsSerializer = require('../serializers/ValidationErrorsSerializer');
+const View = require('../views/index');
 
 const AuthController = {
     me(req, res, next) {
@@ -25,37 +26,28 @@ const AuthController = {
 
                     user.save()
                         .then(user => {
-                            res.send({
-                                status: 'success',
-                                body: {
-                                    text: "User was successfully registered.",
-                                    data: {
-                                        name: user.name,
-                                        email: user.email
-                                    }
-                                }
-                            });
+                            const text = 'User was successfully registered.';
+                            const data = {
+                                name: user.name,
+                                email: user.email
+                            };
+
+                            res.status(200).send(View.generate(text, data));
                         })
                         .catch(error => {
-                            res.send({
-                                status: 'failed',
-                                body: {
-                                    text: "Unexpected error occurred. Try again later."
-                                }
-                            }, 500);
+                            const text = "Unexpected error occurred. Please try again later.";
+
+                            res.status(500).send(View.generate(text, null, false));
                         });
                 });
             })
             .catch(error => {
-                res.send({
-                    status: 'failed',
-                    body: {
-                        text: "Validation error.",
-                        data: {
-                            errors: ValidationErrorsSerializer.serialize(error.errors)
-                        }
-                    }
-                }, 422)
+                const text = "Validation failed.";
+                const data = {
+                    errors: ValidationErrorsSerializer.serialize(error.errors)
+                };
+
+                res.status(422).send(View.generate(text, data, false));
             });
 
     }
