@@ -1,5 +1,6 @@
 const db = require('../models/index');
 const Todo = require('../models/todo')(db.sequelize, db.Sequelize);
+const ValidationErrorsSerializer = require('../serializers/ValidationErrorsSerializer');
 
 const TodoController = {
     index(req, res, next) {
@@ -60,25 +61,12 @@ const TodoController = {
                 });
             })
             .catch(error => {
-                const errors = {};
-
-                error.errors.map(item => {
-                    const fieldName = item.path;
-                    const validationMessage = item.message;
-
-                    if (!errors[fieldName]) {
-                        errors[fieldName] = [];
-                    }
-
-                    errors[fieldName].push(validationMessage);
-                })
-
                 res.send({
                     status: 'failed',
                     body: {
                         text: "Validation error.",
                         data: {
-                            errors
+                            errors: ValidationErrorsSerializer.serialize(error.errors)
                         }
                     }
                 }, 422)

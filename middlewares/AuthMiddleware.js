@@ -1,3 +1,4 @@
 module.exports = (req, res, next) => {
-    res.send('error');
+    // res.send('error');
+    next();
 };

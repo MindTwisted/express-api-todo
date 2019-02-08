@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const db = require('../models/index');
 const User = require('../models/user')(db.sequelize, db.Sequelize);
+const ValidationErrorsSerializer = require('../serializers/ValidationErrorsSerializer');
 
 const AuthController = {
     me(req, res, next) {
@@ -12,8 +13,7 @@ const AuthController = {
     register(req, res, next) {
         const body = req.body;
 
-        const user = User
-            .build({
+        User.build({
                 name: body.name,
                 email: body.email,
                 password: body.password
@@ -47,25 +47,12 @@ const AuthController = {
                 });
             })
             .catch(error => {
-                const errors = {};
-
-                error.errors.map(item => {
-                    const fieldName = item.path;
-                    const validationMessage = item.message;
-
-                    if (!errors[fieldName]) {
-                        errors[fieldName] = [];
-                    }
-
-                    errors[fieldName].push(validationMessage);
-                })
-
                 res.send({
                     status: 'failed',
                     body: {
                         text: "Validation error.",
                         data: {
-                            errors
+                            errors: ValidationErrorsSerializer.serialize(error.errors)
                         }
                     }
                 }, 422)
