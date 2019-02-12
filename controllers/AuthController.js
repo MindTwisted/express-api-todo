@@ -1,13 +1,24 @@
 const bcrypt = require('bcrypt');
-const db = require('../models/index');
-const User = require('../models/user')(db.sequelize, db.Sequelize);
-const TokenGenerator = require('../models/token');
+const randomstring = require("randomstring");
+const moment = require('moment');
 const ValidationErrorsSerializer = require('../serializers/ValidationErrorsSerializer');
 const View = require('../views/index');
+const db = require('../models/index');
+const User = db.User;
+const Token = db.Token;
 
 const AuthController = {
     me(req, res, next) {
-        res.send('me');
+        const user = req.user;
+        const data = {
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email
+            }
+        };
+
+        res.status(200).send(View.generate(null, data));
     },
     login(req, res, next) {
         const body = req.body;
@@ -32,9 +43,9 @@ const AuthController = {
                             return;
                         }
 
-                        const Token = TokenGenerator(db.sequelize, db.Sequelize);
-                        
                         Token.create({
+                                token: randomstring.generate(),
+                                expiredAt: moment().add(1, 'hours').format("YYYY-MM-DD HH:mm:ss"),
                                 userId: user.id
                             })
                             .then(token => {

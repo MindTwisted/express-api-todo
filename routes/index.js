@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 const TodoController = require('../controllers/TodoController');
 const AuthController = require('../controllers/AuthController');
-const AuthMiddleware = require('../middlewares/AuthMiddleware');
+const AuthenticationMiddleware = require('../middlewares/AuthenticationMiddleware');
+const IsLoggedInMiddleware = require('../middlewares/IsLoggedInMiddleware');
 
-router.use('/api', AuthMiddleware);
+router.use('/', AuthenticationMiddleware);
+router.use('/api', IsLoggedInMiddleware);
 
 router.post('/auth/login', AuthController.login);
 router.post('/auth/register', AuthController.register);

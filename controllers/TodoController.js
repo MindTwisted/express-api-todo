@@ -1,7 +1,7 @@
-const db = require('../models/index');
-const Todo = require('../models/todo')(db.sequelize, db.Sequelize);
 const ValidationErrorsSerializer = require('../serializers/ValidationErrorsSerializer');
 const View = require('../views/index');
+const db = require('../models/index');
+const Todo = db.Todo;
 
 const TodoController = {
     index(req, res, next) {

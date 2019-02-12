@@ -10,5 +10,6 @@ services:
       MYSQL_USER: express
       MYSQL_PASSWORD: secret
       MYSQL_DATABASE: express_todo_api
+      default_time_zone: Europe/Kiev
     ports:
       - "3306:3306"

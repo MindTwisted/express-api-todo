@@ -13,7 +13,8 @@ module.exports = {
                 references: {
                     model: 'Users',
                     key: 'id'
-                }
+                },
+                onDelete: 'CASCADE'
             },
             token: {
                 allowNull: false,
