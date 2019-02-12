@@ -12,6 +12,7 @@ router.post('/auth/login', AuthController.login);
 router.post('/auth/register', AuthController.register);
 
 router.get('/api/auth', AuthController.me);
+router.delete('/api/auth', AuthController.logout);
 router.get('/api/todos', TodoController.index);
 router.get('/api/todos/:id', TodoController.show);
 router.post('/api/todos', TodoController.store);
