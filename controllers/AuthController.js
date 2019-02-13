@@ -10,11 +10,7 @@ const AuthController = {
     me(req, res, next) {
         const user = req.user;
         const data = {
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email
-            }
+            user
         };
 
         res.status(200).send(View.generate(null, data));
@@ -65,10 +61,8 @@ const AuthController = {
 
                         const text = `User ${user.name} was successfully logged in.`;
                         const data = {
-                            name: user.name,
-                            email: user.email,
-                            token: token.token,
-                            expiredAt: token.expiredAt
+                            user,
+                            token
                         };
 
                         res.status(200).send(View.generate(text, data));
@@ -94,9 +88,7 @@ const AuthController = {
                     .then(user => {
                         const text = 'User was successfully registered.';
                         const data = {
-                            id: user.id,
-                            name: user.name,
-                            email: user.email
+                            user
                         };
 
                         res.status(200).send(View.generate(text, data));

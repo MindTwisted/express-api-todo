@@ -16,5 +16,16 @@ module.exports = (sequelize, DataTypes) => {
         });
     };
 
+    Token.prototype.toJSON = function() {
+        const values = Object.assign({}, this.get());
+
+        delete values.id;
+        delete values.UserId;
+        delete values.createdAt;
+        delete values.updatedAt;
+
+        return values;
+    };
+
     return Token;
 };

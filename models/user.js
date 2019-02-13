@@ -48,5 +48,15 @@ module.exports = (sequelize, DataTypes) => {
         models.User.hasMany(models.Todo);
     };
 
+    User.prototype.toJSON = function() {
+        const values = Object.assign({}, this.get());
+
+        delete values.password;
+        delete values.createdAt;
+        delete values.updatedAt;
+
+        return values;
+    };
+
     return User;
 };

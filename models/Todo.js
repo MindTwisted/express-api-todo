@@ -28,5 +28,15 @@ module.exports = (sequelize, DataTypes) => {
         });
     };
 
+    Todo.prototype.toJSON = function() {
+        const values = Object.assign({}, this.get());
+
+        delete values.UserId;
+        delete values.createdAt;
+        delete values.updatedAt;
+
+        return values;
+    };
+
     return Todo;
 };
