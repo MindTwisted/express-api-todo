@@ -6,26 +6,21 @@ module.exports = (err, req, res, next) => {
         return next(err);
     }
 
-    if (err.name === 'SequelizeConnectionRefusedError') {
-        const text = "Unexpected error occurred. Please try again later.";
-
-        return res.status(500).send(View.generate(text, null, false));
+    switch (err.name) {
+        case 'SequelizeConnectionRefusedError':
+        case 'SequelizeDatabaseError':
+            return res.status(500).send(View.generate(
+                "Unexpected error occurred. Please try again later.", null, false
+            ));
+        case 'SequelizeValidationError':
+            return res.status(422).send(View.generate(
+                "Validation failed.", {
+                    errors: ValidationErrorsSerializer.serialize(err.errors)
+                }, false
+            ));
+        case 'NotFoundError':
+            return res.status(404).send(View.generate(err.message, null, false));
+        default:
+            return next(err);
     }
-
-    if (err.name === 'SequelizeValidationError') {
-        const text = "Validation failed.";
-        const data = {
-            errors: ValidationErrorsSerializer.serialize(err.errors)
-        };
-
-        return res.status(422).send(View.generate(text, data, false));
-    }
-
-    if (err.name === 'NotFoundError') {
-        const text = err.message;
-
-        return res.status(404).send(View.generate(text, null, false));
-    }
-
-    next(err);
 };

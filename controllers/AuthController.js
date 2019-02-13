@@ -1,6 +1,4 @@
 const bcrypt = require('bcrypt');
-const randomstring = require("randomstring");
-const moment = require('moment');
 const View = require('../views/index');
 const db = require('../models/index');
 const User = db.User;
@@ -49,8 +47,6 @@ const AuthController = {
                         }
 
                         return Token.create({
-                            token: randomstring.generate(),
-                            expiredAt: moment().add(1, 'hours').format("YYYY-MM-DD HH:mm:ss"),
                             UserId: user.id
                         });
                     })
