@@ -25,7 +25,7 @@ const AuthController = {
 
         Token.destroy({
                 where: {
-                    userId: user.id
+                    UserId: user.id
                 }
             })
             .then(() => {
@@ -61,7 +61,7 @@ const AuthController = {
                         return Token.create({
                             token: randomstring.generate(),
                             expiredAt: moment().add(1, 'hours').format("YYYY-MM-DD HH:mm:ss"),
-                            userId: user.id
+                            UserId: user.id
                         });
                     })
                     .then(token => {

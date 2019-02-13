@@ -8,18 +8,6 @@ module.exports = (sequelize, DataTypes) => {
             validate: {
                 len: {
                     min: 6
-                },
-                isUnique(value, next) {
-                    Todo.find({
-                        where: {title: value},
-                        attributes: ['id']
-                    }).then(todo => {
-                        if (todo) {
-                            return next('This title is already in use.');
-                        }
-
-                        next();
-                    });
                 }
             }
         },
@@ -28,14 +16,16 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             validate: {
                 len: {
-                    min: 20
+                    min: 10
                 }
             }
         }
     }, {});
 
     Todo.associate = function (models) {
-        // associations can be defined here
+        models.Todo.belongsTo(models.User, {
+            onDelete: "CASCADE"
+        });
     };
 
     return Todo;

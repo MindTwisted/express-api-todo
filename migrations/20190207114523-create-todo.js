@@ -8,6 +8,14 @@ module.exports = {
                     primaryKey: true,
                     type: Sequelize.INTEGER
                 },
+                userId: {
+                    type: Sequelize.INTEGER,
+                    references: {
+                        model: 'Users',
+                        key: 'id'
+                    },
+                    onDelete: 'CASCADE'
+                },
                 title: {
                     allowNull: false,
                     type: Sequelize.STRING
@@ -24,12 +32,6 @@ module.exports = {
                     allowNull: false,
                     type: Sequelize.DATE
                 }
-            })
-            .then(() => {
-                return queryInterface.addConstraint('Todos', ['title'], {
-                    type: 'unique',
-                    name: 'todos_unique_title'
-                });
             });
     },
     down: (queryInterface, Sequelize) => {

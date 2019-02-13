@@ -5,26 +5,41 @@ const Todo = db.Todo;
 
 const TodoController = {
     index(req, res, next) {
-        Todo.findAll()
+        const user = req.user;
+
+        Todo.findAll({
+                where: {
+                    userId: user.id
+                }
+            })
             .then(todos => {
                 const data = {
                     todos
                 };
 
                 res.status(200).send(View.generate(null, data));
+            })
+            .catch(error => {
+                const text = "Unexpected error occurred. Please try again later.";
+
+                res.status(500).send(View.generate(text, null, false));
             });
     },
     show(req, res, next) {
         const id = req.params.id;
+        const user = req.user;
     
-        Todo.findById(id)
+        Todo.findOne({
+                where: {
+                    id,
+                    userId: user.id
+                }
+            })
             .then(todo => {
                 if (!todo) {
                     const text = `Todo with id ${id} doesn't exist.`;
 
-                    res.status(404).send(View.generate(text, null, false));
-
-                    return;
+                    return res.status(404).send(View.generate(text, null, false));
                 }
 
                 const data = {
@@ -32,22 +47,38 @@ const TodoController = {
                 };
 
                 res.status(200).send(View.generate(null, data));
+            })
+            .catch(error => {
+                const text = "Unexpected error occurred. Please try again later.";
+
+                res.status(500).send(View.generate(text, null, false));
             });
     },
     store(req, res, next) {
         const body = req.body;
+        const user = req.user;
     
-        Todo.create({
+        Todo.build({
                 title: body.title,
-                description: body.description
+                description: body.description,
+                UserId: user.id
             })
+            .validate()
             .then(todo => {
-                const text = "Todo was successfully added.";
-                const data = {
-                    todo
-                };
+                todo.save()
+                    .then(todo => {
+                        const text = "Todo was successfully added.";
+                        const data = {
+                            todo
+                        };
 
-                res.status(200).send(View.generate(text, data));
+                        res.status(200).send(View.generate(text, data));
+                    })
+                    .catch(error => {
+                        const text = "Unexpected error occurred. Please try again later.";
+
+                        res.status(500).send(View.generate(text, null, false));
+                    });
             })
             .catch(error => {
                 const text = "Validation failed.";
@@ -60,24 +91,32 @@ const TodoController = {
     },
     destroy(req, res, next) {
         const id = req.params.id;
-    
-        Todo.findById(id)
+        const user = req.user;
+
+        Todo.findOne({
+                where: {
+                    id,
+                    UserId: user.id
+                }
+            })
             .then(todo => {
                 if (!todo) {
-                    return Promise.reject();
+                    const text = `Todo with id ${id} doesn't exist.`;
+
+                    return res.status(404).send(View.generate(text, null, false));
                 }
 
-                return todo.destroy();
-            })
-            .then(() => {
-                const text = `Todo with id ${id} was successfully deleted.`;
-
-                res.status(200).send(View.generate(text));
+                return todo.destroy()
+                    .then(() => {
+                        const text = `Todo with id ${id} was successfully deleted.`;
+        
+                        res.status(200).send(View.generate(text));
+                    });
             })
             .catch(error => {
-                const text = `Todo with id ${id} doesn't exist.`;
+                const text = "Unexpected error occurred. Please try again later.";
 
-                res.status(404).send(View.generate(text, null, false));
+                res.status(500).send(View.generate(text, null, false));
             });
     }
 };

@@ -5,13 +5,6 @@ module.exports = (sequelize, DataTypes) => {
         token: {
             type: DataTypes.STRING
         },
-        userId: {
-            type: DataTypes.INTEGER,
-            references: {
-                model: 'User',
-                key: 'id'
-            }
-        },
         expiredAt: {
             type: DataTypes.DATE
         }
