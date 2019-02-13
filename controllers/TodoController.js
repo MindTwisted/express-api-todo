@@ -1,5 +1,5 @@
-const ValidationErrorsSerializer = require('../serializers/ValidationErrorsSerializer');
 const View = require('../views/index');
+const NotFoundError = require('../errors/NotFoundError');
 const db = require('../models/index');
 const Todo = db.Todo;
 
@@ -18,12 +18,7 @@ const TodoController = {
                 };
 
                 res.status(200).send(View.generate(null, data));
-            })
-            .catch(error => {
-                const text = "Unexpected error occurred. Please try again later.";
-
-                res.status(500).send(View.generate(text, null, false));
-            });
+            }).catch(next);
     },
     show(req, res, next) {
         const id = req.params.id;
@@ -37,9 +32,7 @@ const TodoController = {
             })
             .then(todo => {
                 if (!todo) {
-                    const text = `Todo with id ${id} doesn't exist.`;
-
-                    return res.status(404).send(View.generate(text, null, false));
+                    return next(new NotFoundError(`Todo with id ${id} doesn't exist.`));
                 }
 
                 const data = {
@@ -47,12 +40,7 @@ const TodoController = {
                 };
 
                 res.status(200).send(View.generate(null, data));
-            })
-            .catch(error => {
-                const text = "Unexpected error occurred. Please try again later.";
-
-                res.status(500).send(View.generate(text, null, false));
-            });
+            }).catch(next);
     },
     store(req, res, next) {
         const body = req.body;
@@ -73,21 +61,8 @@ const TodoController = {
                         };
 
                         res.status(200).send(View.generate(text, data));
-                    })
-                    .catch(error => {
-                        const text = "Unexpected error occurred. Please try again later.";
-
-                        res.status(500).send(View.generate(text, null, false));
-                    });
-            })
-            .catch(error => {
-                const text = "Validation failed.";
-                const data = {
-                    errors: ValidationErrorsSerializer.serialize(error.errors)
-                };
-
-                res.status(422).send(View.generate(text, data, false));
-            });
+                    }).catch(next);
+            }).catch(next);
     },
     destroy(req, res, next) {
         const id = req.params.id;
@@ -101,9 +76,7 @@ const TodoController = {
             })
             .then(todo => {
                 if (!todo) {
-                    const text = `Todo with id ${id} doesn't exist.`;
-
-                    return res.status(404).send(View.generate(text, null, false));
+                    return next(new NotFoundError(`Todo with id ${id} doesn't exist.`));
                 }
 
                 return todo.destroy()
@@ -111,13 +84,8 @@ const TodoController = {
                         const text = `Todo with id ${id} was successfully deleted.`;
         
                         res.status(200).send(View.generate(text));
-                    });
-            })
-            .catch(error => {
-                const text = "Unexpected error occurred. Please try again later.";
-
-                res.status(500).send(View.generate(text, null, false));
-            });
+                    }).catch(next);
+            }).catch(next);
     }
 };
 

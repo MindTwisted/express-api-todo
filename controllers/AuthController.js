@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt');
 const randomstring = require("randomstring");
 const moment = require('moment');
-const ValidationErrorsSerializer = require('../serializers/ValidationErrorsSerializer');
 const View = require('../views/index');
 const db = require('../models/index');
 const User = db.User;
@@ -32,12 +31,7 @@ const AuthController = {
                 const text = `User ${user.name} was successfully logged out.`;
                         
                 res.status(200).send(View.generate(text));
-            })
-            .catch(error => {
-                const text = "Unexpected error occurred. Please try again later.";
-
-                res.status(500).send(View.generate(text, null, false));
-            });
+            }).catch(next);
     },
     login(req, res, next) {
         const body = req.body;
@@ -79,12 +73,7 @@ const AuthController = {
 
                         res.status(200).send(View.generate(text, data));
                     });
-            })
-            .catch(error => {
-                const text = "Unexpected error occurred. Please try again later.";
-
-                res.status(500).send(View.generate(text, null, false));
-            });
+            }).catch(next);
     },
     register(req, res, next) {
         const body = req.body;
@@ -111,22 +100,8 @@ const AuthController = {
                         };
 
                         res.status(200).send(View.generate(text, data));
-                    })
-                    .catch(error => {
-                        const text = "Unexpected error occurred. Please try again later.";
-
-                        res.status(500).send(View.generate(text, null, false));
-                    });
-            })
-            .catch(error => {
-                const text = "Validation failed.";
-                const data = {
-                    errors: ValidationErrorsSerializer.serialize(error.errors)
-                };
-
-                res.status(422).send(View.generate(text, data, false));
-            });
-
+                    }).catch(next);
+            }).catch(next);
     }
 }
 

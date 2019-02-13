@@ -1,5 +1,4 @@
 const moment = require('moment');
-const View = require('../views/index');
 const db = require('../models/index');
 const Token = db.Token;
 const User = db.User;
@@ -41,9 +40,5 @@ module.exports = (req, res, next) => {
 
             return next();
         })
-        .catch(error => {
-            const text = "Unexpected error occurred. Please try again later.";
-
-            res.status(500).send(View.generate(text, null, false));
-        });
+        .catch(next);
 };

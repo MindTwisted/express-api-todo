@@ -18,18 +18,17 @@ module.exports = (sequelize, DataTypes) => {
                 isEmail: true,
                 isUnique(value, next) {
                     User.find({
-                        where: {email: value},
-                        attributes: ['id']
-                    }).then(user => {
-                        if (user) {
-                            return next('This email is already in use.');
-                        }
+                            where: {email: value},
+                            attributes: ['id']
+                        })
+                        .then(user => {
+                            if (user) {
+                                return next('This email is already in use.');
+                            }
 
-                        next();
-                    })
-                    .catch(error => {
-                        return next("Unexpected error occurred. Try again later.");
-                    });
+                            next();
+                        })
+                        .catch(() => next('Unexpected error occurred. Please try again later.'));
                 }
             }
         },
