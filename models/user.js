@@ -1,5 +1,7 @@
 'use strict';
 
+const bcrypt = require('bcrypt');
+
 module.exports = (sequelize, DataTypes) => {
     const User = sequelize.define('User', {
         name: {
@@ -41,7 +43,16 @@ module.exports = (sequelize, DataTypes) => {
                 }
             }
         }
-    }, {});
+    }, {
+        hooks: {
+            beforeSave(instance, options) {
+                return bcrypt.hash(instance.password, 10)
+                    .then(hash => {
+                        instance.password = hash;
+                    });
+            }
+        }
+    });
 
     User.associate = function (models) {
         models.User.hasMany(models.Token);

@@ -68,27 +68,18 @@ const AuthController = {
     register(req, res, next) {
         const body = req.body;
 
-        User.build({
+        User.create({
                 name: body.name,
                 email: body.email,
                 password: body.password
             })
-            .validate()
             .then(user => {
-                bcrypt.hash(body.password, 10)
-                    .then(hash => {
-                        user.password = hash;
+                const text = 'User was successfully registered.';
+                const data = {
+                    user
+                };
 
-                        return user.save();
-                    })
-                    .then(user => {
-                        const text = 'User was successfully registered.';
-                        const data = {
-                            user
-                        };
-
-                        res.status(200).send(View.generate(text, data));
-                    }).catch(next);
+                res.status(200).send(View.generate(text, data));
             }).catch(next);
     }
 }
