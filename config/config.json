@@ -7,10 +7,11 @@
         "dialect": "mysql"
     },
     "test": {
-        "username": "root",
-        "password": null,
-        "database": "database_test",
-        "host": "127.0.0.1",
+        "username": "express",
+        "password": "secret",
+        "database": "test_express_todo_api",
+        "host": "192.168.99.100",
+        "port": "3307",
         "dialect": "mysql"
     },
     "production": {
